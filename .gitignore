@@ -259,3 +259,6 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+# memo
+MEMO.md
