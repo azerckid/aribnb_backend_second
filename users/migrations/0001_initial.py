@@ -57,18 +57,8 @@ class Migration(migrations.Migration):
                         verbose_name="username",
                     ),
                 ),
-                (
-                    "first_name",
-                    models.CharField(
-                        blank=True, max_length=150, verbose_name="first name"
-                    ),
-                ),
-                (
-                    "last_name",
-                    models.CharField(
-                        blank=True, max_length=150, verbose_name="last name"
-                    ),
-                ),
+                ("first_name", models.CharField(editable=False, max_length=150)),
+                ("last_name", models.CharField(editable=False, max_length=150)),
                 (
                     "email",
                     models.EmailField(
@@ -97,6 +87,8 @@ class Migration(migrations.Migration):
                         default=django.utils.timezone.now, verbose_name="date joined"
                     ),
                 ),
+                ("name", models.CharField(default="", max_length=150)),
+                ("is_host", models.BooleanField(default=False)),
                 (
                     "groups",
                     models.ManyToManyField(
