@@ -9,11 +9,11 @@ class House(models.Model):
     name = models.CharField(max_length=140)
     description = models.TextField()
     price_per_night = models.PositiveIntegerField(
-        verbose_name="Price per night",
-        help_text="Positive numbers only",
+        verbose_name="Price",
+        help_text="Positive Numbers Only",
     )
     pets_allowed = models.BooleanField(
-        verbose_name="Pets allowed?",
+        verbose_name="Pets Allowed?",
         default=True,
         help_text="Does this house allow pets?",
     )
