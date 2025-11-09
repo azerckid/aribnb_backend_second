@@ -8,7 +8,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=150, editable=False)
     last_name = models.CharField(max_length=150, editable=False)
     name = models.CharField(max_length=150, default="")
-    is_host = models.BooleanField(default=False)
+    is_host = models.BooleanField(null=True)
 
     def __str__(self) -> str:
         return self.username
