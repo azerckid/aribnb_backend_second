@@ -1,0 +1,2 @@
+# Wishlists app package
+

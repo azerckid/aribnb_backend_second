@@ -1,0 +1,16 @@
+from django.db import models
+
+from common.models import CommonModel
+
+
+class Wishlist(CommonModel):
+    """Saved rooms and experiences for a user."""
+
+    name = models.CharField(max_length=150)
+    rooms = models.ManyToManyField("rooms.Room", blank=True)
+    experiences = models.ManyToManyField("experiences.Experience", blank=True)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.user}'s wishlist: {self.name}"
+
