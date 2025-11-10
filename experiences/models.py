@@ -1,4 +1,6 @@
 from django.db import models
+
+from categories.models import Category
 from common.models import CommonModel
 
 
@@ -14,7 +16,14 @@ class Experience(CommonModel):
     start = models.TimeField()
     end = models.TimeField()
     description = models.TextField()
-    perks = models.ManyToManyField("experiences.Perk")
+    perks = models.ManyToManyField("experiences.Perk", blank=True)
+    category = models.ForeignKey(
+        Category,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="experiences",
+    )
 
     def __str__(self) -> str:
         return self.name
