@@ -35,7 +35,7 @@ class Video(CommonModel):
     experience = models.OneToOneField(
         "experiences.Experience",
         on_delete=models.CASCADE,
-        related_name="video",
+        related_name="videos",
     )
 
     def __str__(self) -> str:

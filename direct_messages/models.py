@@ -6,7 +6,10 @@ from common.models import CommonModel
 class ChattingRoom(CommonModel):
     """Chat room containing one or more users."""
 
-    users = models.ManyToManyField("users.User", related_name="chat_rooms")
+    users = models.ManyToManyField(
+        "users.User",
+        related_name="chatting_rooms",
+    )
 
     def __str__(self) -> str:
         return f"Room #{self.pk} with {self.users.count()} users"

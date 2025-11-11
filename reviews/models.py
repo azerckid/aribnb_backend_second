@@ -8,7 +8,11 @@ from django.conf import settings
 class Review(CommonModel):
     """Review from a user to a room or experience."""
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+    )
     room = models.ForeignKey(
         "rooms.Room",
         null=True,
