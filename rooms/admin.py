@@ -10,6 +10,7 @@ class RoomAdmin(admin.ModelAdmin):
         "price",
         "kind",
         "total_amenities",
+        "rating",
         "owner",
         "created_at",
     )
@@ -22,7 +23,12 @@ class RoomAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    search_fields = ("name", "address", "owner__username")
+    search_fields = (
+        "name",
+        "^price",
+        "=owner__username",
+        "address",
+    )
     ordering = ("-created_at",)
     filter_horizontal = ("amenities",)
 
