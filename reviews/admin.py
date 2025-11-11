@@ -21,11 +21,31 @@ class WordFilter(admin.SimpleListFilter):
         return reviews
 
 
+class RatingQualityFilter(admin.SimpleListFilter):
+    title = "Review quality"
+    parameter_name = "quality"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("good", "Good (≥ 3★)"),
+            ("bad", "Bad (< 3★)"),
+        ]
+
+    def queryset(self, request, reviews):
+        quality = self.value()
+        if quality == "good":
+            return reviews.filter(rating__gte=3)
+        if quality == "bad":
+            return reviews.filter(rating__lt=3)
+        return reviews
+
+
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ("__str__", "rating", "payload", "created_at")
     list_filter = (
         WordFilter,
+        RatingQualityFilter,
         "rating",
         "user__is_host",
         "room__category",
