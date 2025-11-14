@@ -25,7 +25,10 @@ class Wishlists(APIView):
             wishlist = serializer.save(
                 user=request.user,
             )
-            serializer = WishlistSerializer(wishlist)
+            serializer = WishlistSerializer(
+                wishlist,
+                context={"request": request},
+            )
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
