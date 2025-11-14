@@ -1,0 +1,22 @@
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ("medias", "0002_alter_video_experience"),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name="photo",
+            name="file",
+            field=models.URLField(),
+        ),
+        migrations.AlterField(
+            model_name="video",
+            name="file",
+            field=models.URLField(),
+        ),
+    ]
+
