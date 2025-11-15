@@ -17,7 +17,10 @@ from bookings.models import Booking
 from .serializers import AmenitySerializer, RoomListSerializer, RoomDetailSerializer
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
-from bookings.serializers import PublicBookingSerializer
+from bookings.serializers import (
+    PublicBookingSerializer,
+    CreateRoomBookingSerializer,
+)
 
 class Amenities(APIView):
     def get(self, request):
@@ -283,3 +286,28 @@ class RoomBookings(APIView):
             many=True,
         )
         return Response(serializer.data)
+
+    def post(self, request, pk):
+        room = self.get_object(pk)
+        serializer = CreateRoomBookingSerializer(data=request.data)
+        if serializer.is_valid():
+            check_in = serializer.validated_data["check_in"]
+            check_out = serializer.validated_data["check_out"]
+            existing = Booking.objects.filter(
+                room=room,
+                kind=Booking.BookingKindChoices.ROOM,
+                check_in__lt=check_out,
+                check_out__gt=check_in,
+            ).exists()
+            if existing:
+                raise ParseError("Those dates are already booked.")
+            booking = serializer.save(
+                room=room,
+                user=request.user,
+                kind=Booking.BookingKindChoices.ROOM,
+            )
+            return Response(
+                PublicBookingSerializer(booking).data,
+                status=201,
+            )
+        return Response(serializer.errors)
