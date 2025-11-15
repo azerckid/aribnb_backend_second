@@ -19,7 +19,7 @@ class User(AbstractUser):
 
     first_name = models.CharField(max_length=150, editable=False, blank=True, default="")
     last_name = models.CharField(max_length=150, editable=False, blank=True, default="")
-    avatar = models.ImageField(blank=True, null=True)
+    avatar = models.URLField(blank=True, default="")
     name = models.CharField(max_length=150, default="")
     is_host = models.BooleanField(default=False)
     gender = models.CharField(

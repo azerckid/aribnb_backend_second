@@ -1,4 +1,5 @@
 from django.utils import timezone
+from datetime import timedelta
 from rest_framework import serializers
 
 from .models import Booking
@@ -72,18 +73,54 @@ class CreateRoomBookingSerializer(serializers.ModelSerializer):
                     )
         return data
 
-    def validate(self, attrs):
-        check_in = attrs.get("check_in")
-        check_out = attrs.get("check_out")
-        if check_in and check_out and check_out <= check_in:
-            raise serializers.ValidationError("Check-out must be after check-in.")
-        return attrs
+class CreateExperienceBookingSerializer(serializers.ModelSerializer):
+
+    experience_time = serializers.DateTimeField()
+
+    class Meta:
+        model = Booking
+        fields = (
+            "experience_time",
+            "guests",
+        )
+
+    def validate_experience_time(self, value):
+        now = timezone.now()
+        if value <= now:
+            raise serializers.ValidationError("Can't book in the past!")
+        return value
+
+    def validate(self, data):
+        experience = self.context.get("experience")
+        if not experience:
+            raise serializers.ValidationError("Experience context is required.")
+        experience_time = data.get("experience_time")
+        if experience_time:
+            duration_minutes = getattr(experience, "duration", 60)
+            slot_end = experience_time + timedelta(minutes=duration_minutes)
+            # ensure slot within experience schedule
+            start_time = experience_time.time()
+            end_time = slot_end.time()
+            if start_time < experience.start or start_time >= experience.end:
+                raise serializers.ValidationError("Start time outside experience schedule.")
+            if slot_end.date() != experience_time.date() or end_time > experience.end:
+                raise serializers.ValidationError("Slot exceeds available schedule.")
+            conflicts = Booking.objects.filter(
+                experience=experience,
+                kind=Booking.BookingKindChoices.EXPERIENCE,
+                experience_time__lt=slot_end,
+                experience_end__gt=experience_time,
+            ).exists()
+            if conflicts:
+                raise serializers.ValidationError("This slot is already booked.")
+        return data
 
 
 class PublicBookingSerializer(serializers.ModelSerializer):
 
     price = serializers.SerializerMethodField()
     bed = serializers.SerializerMethodField()
+    experience_end = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Booking
@@ -92,6 +129,7 @@ class PublicBookingSerializer(serializers.ModelSerializer):
             "check_in",
             "check_out",
             "experience_time",
+            "experience_end",
             "guests",
             "bed",
             "price",

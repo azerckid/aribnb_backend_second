@@ -25,6 +25,7 @@ class Experience(CommonModel):
         blank=True,
         related_name="experiences",
     )
+    duration = models.PositiveIntegerField(default=60, help_text="Duration in minutes")
     category = models.ForeignKey(
         Category,
         null=True,
