@@ -127,6 +127,23 @@ asgiref = ">=3.6"
 django = ">=4.2"
 
 [[package]]
+name = "django-environ"
+version = "0.12.0"
+description = "A package that allows you to utilize 12factor inspired environment variables to configure your Django application."
+optional = false
+python-versions = "<4,>=3.9"
+groups = ["main"]
+files = [
+    {file = "django_environ-0.12.0-py2.py3-none-any.whl", hash = "sha256:92fb346a158abda07ffe6eb23135ce92843af06ecf8753f43adf9d2366dcc0ca"},
+    {file = "django_environ-0.12.0.tar.gz", hash = "sha256:227dc891453dd5bde769c3449cf4a74b6f2ee8f7ab2361c93a07068f4179041a"},
+]
+
+[package.extras]
+develop = ["coverage[toml] (>=5.0a4)", "furo (>=2024.8.6)", "pytest (>=4.6.11)", "setuptools (>=71.0.0)", "sphinx (>=5.0)", "sphinx-notfound-page"]
+docs = ["furo (>=2024.8.6)", "sphinx (>=5.0)", "sphinx-notfound-page"]
+testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)", "setuptools (>=71.0.0)"]
+
+[[package]]
 name = "djangorestframework"
 version = "3.16.1"
 description = "Web APIs for Django, made easy."
@@ -524,17 +541,6 @@ docs = ["sphinx", "sphinx_rtd_theme"]
 testing = ["Django", "django-configurations (>=2.0)"]
 
 [[package]]
-name = "python-environ"
-version = "0.4.54"
-description = "Django-environ allows you to utilize 12factor inspired environment variables to configure your Django application."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "python-environ-0.4.54.tar.gz", hash = "sha256:6249a14057f95aba3b4906d73276f770e01e659f8098b3f3b34295feac42865b"},
-]
-
-[[package]]
 name = "pytokens"
 version = "0.2.0"
 description = "A Fast, spec compliant Python 3.13+ tokenizer that runs on older Pythons."
@@ -580,5 +586,5 @@ files = [
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.14"
-content-hash = "6cd347e181639750079031f2b274f83a5421af1b7400c17d72184e88664b852d"
+python-versions = ">=3.14,<4.0"
+content-hash = "4ca2e99a2e75147ef23fb665b81f45a2aab1fbf513228a92ca822c7f98a50f94"
