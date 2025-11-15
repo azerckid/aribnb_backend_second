@@ -29,10 +29,18 @@ class CreateRoomBookingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Can't book in the past!")
         return value
 
+    def validate(self, attrs):
+        check_in = attrs.get("check_in")
+        check_out = attrs.get("check_out")
+        if check_in and check_out and check_out <= check_in:
+            raise serializers.ValidationError("Check-out must be after check-in.")
+        return attrs
+
 
 class PublicBookingSerializer(serializers.ModelSerializer):
 
     price = serializers.SerializerMethodField()
+    bed = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -42,6 +50,7 @@ class PublicBookingSerializer(serializers.ModelSerializer):
             "check_out",
             "experience_time",
             "guests",
+            "bed",
             "price",
         )
 
@@ -51,4 +60,14 @@ class PublicBookingSerializer(serializers.ModelSerializer):
         if booking.experience:
             return booking.experience.price
         return None
+
+    def get_bed(self, booking):
+        if not booking.bed:
+            return None
+        return {
+            "pk": booking.bed.pk,
+            "name": booking.bed.name,
+            "bed_type": booking.bed.bed_type,
+            "room": booking.bed.room.pk,
+        }
 

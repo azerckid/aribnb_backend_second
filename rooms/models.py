@@ -67,3 +67,25 @@ class Amenity(CommonModel):
 
     class Meta:
         verbose_name_plural = "Amenities"
+
+
+class Bed(CommonModel):
+    """Bed definition inside a room."""
+
+    class BedTypeChoices(models.TextChoices):
+        LOWER = ("lower", "Lower Bunk")
+        UPPER = ("upper", "Upper Bunk")
+        SINGLE = ("single", "Single")
+        DOUBLE = ("double", "Double")
+
+    room = models.ForeignKey(
+        "rooms.Room",
+        on_delete=models.CASCADE,
+        related_name="beds",
+    )
+    name = models.CharField(max_length=100)
+    bed_type = models.CharField(max_length=20, choices=BedTypeChoices.choices)
+    capacity = models.PositiveIntegerField(default=1)
+
+    def __str__(self) -> str:
+        return f"{self.room.name} - {self.name} ({self.get_bed_type_display()})"

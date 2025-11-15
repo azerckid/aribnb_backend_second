@@ -11,10 +11,15 @@ from rest_framework.exceptions import (
     ParseError,
     PermissionDenied,
 )
-from .models import Amenity, Room
+from .models import Amenity, Room, Bed
 from categories.models import Category
 from bookings.models import Booking
-from .serializers import AmenitySerializer, RoomListSerializer, RoomDetailSerializer
+from .serializers import (
+    AmenitySerializer,
+    RoomListSerializer,
+    RoomDetailSerializer,
+    BedSerializer,
+)
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
 from bookings.serializers import (
@@ -301,10 +306,172 @@ class RoomBookings(APIView):
             ).exists()
             if existing:
                 raise ParseError("Those dates are already booked.")
+            bed_conflict = Booking.objects.filter(
+                bed__room=room,
+                kind=Booking.BookingKindChoices.BED,
+                check_in__lt=check_out,
+                check_out__gt=check_in,
+            ).exists()
+            if bed_conflict:
+                raise ParseError("Some beds are already booked during those dates.")
             booking = serializer.save(
                 room=room,
                 user=request.user,
                 kind=Booking.BookingKindChoices.ROOM,
+            )
+            return Response(
+                PublicBookingSerializer(booking).data,
+                status=201,
+            )
+        return Response(serializer.errors)
+
+
+class RoomBeds(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_room(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+
+    def get(self, request, pk):
+        room = self.get_room(pk)
+        beds = room.beds.all()
+        bed_type = request.query_params.get("type")
+        if bed_type:
+            beds = beds.filter(bed_type=bed_type)
+        serializer = BedSerializer(
+            beds,
+            many=True,
+        )
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        room = self.get_room(pk)
+        if room.owner != request.user:
+            raise PermissionDenied
+        serializer = BedSerializer(data=request.data)
+        if serializer.is_valid():
+            bed = serializer.save(room=room)
+            return Response(
+                BedSerializer(bed).data,
+                status=201,
+            )
+        return Response(serializer.errors)
+
+
+class BedDetail(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_object(self, room_pk, bed_pk):
+        try:
+            return Bed.objects.get(pk=bed_pk, room_id=room_pk)
+        except Bed.DoesNotExist:
+            raise NotFound
+
+    def get(self, request, pk, bed_pk):
+        bed = self.get_object(pk, bed_pk)
+        serializer = BedSerializer(bed)
+        return Response(serializer.data)
+
+    def put(self, request, pk, bed_pk):
+        bed = self.get_object(pk, bed_pk)
+        if bed.room.owner != request.user:
+            raise PermissionDenied
+        serializer = BedSerializer(
+            bed,
+            data=request.data,
+            partial=True,
+        )
+        if serializer.is_valid():
+            updated = serializer.save()
+            return Response(BedSerializer(updated).data)
+        return Response(serializer.errors)
+
+    def delete(self, request, pk, bed_pk):
+        bed = self.get_object(pk, bed_pk)
+        if bed.room.owner != request.user:
+            raise PermissionDenied
+        bed.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
+
+
+class BedBookings(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_bed(self, room_pk, bed_pk):
+        try:
+            return Bed.objects.get(pk=bed_pk, room_id=room_pk)
+        except Bed.DoesNotExist:
+            raise NotFound
+
+    def get(self, request, pk, bed_pk):
+        bed = self.get_bed(pk, bed_pk)
+        try:
+            year = int(request.query_params.get("year", timezone.localdate().year))
+            month = int(request.query_params.get("month", timezone.localdate().month))
+        except ValueError:
+            raise ParseError("year and month must be integers")
+        if month < 1 or month > 12:
+            raise ParseError("month must be between 1 and 12")
+        _, last_day = calendar.monthrange(year, month)
+        start_date = timezone.datetime(year, month, 1).date()
+        end_date = timezone.datetime(year, month, last_day).date()
+        bookings = Booking.objects.filter(
+            bed=bed,
+            kind=Booking.BookingKindChoices.BED,
+            check_in__gte=start_date,
+            check_in__lte=end_date,
+        ).order_by("check_in")
+        try:
+            page = int(request.query_params.get("page", 1))
+            if page < 1:
+                raise ValueError
+        except ValueError:
+            raise ParseError("page must be a positive integer")
+        page_size = settings.PAGE_SIZE
+        start = (page - 1) * page_size
+        end = start + page_size
+        serializer = PublicBookingSerializer(
+            bookings[start:end],
+            many=True,
+        )
+        return Response(serializer.data)
+
+    def post(self, request, pk, bed_pk):
+        bed = self.get_bed(pk, bed_pk)
+        serializer = CreateRoomBookingSerializer(data=request.data)
+        if serializer.is_valid():
+            check_in = serializer.validated_data["check_in"]
+            check_out = serializer.validated_data["check_out"]
+            guests = serializer.validated_data["guests"]
+            if guests > bed.capacity:
+                raise ParseError("Guest count exceeds bed capacity.")
+            room_conflict = Booking.objects.filter(
+                room=bed.room,
+                kind=Booking.BookingKindChoices.ROOM,
+                check_in__lt=check_out,
+                check_out__gt=check_in,
+            ).exists()
+            if room_conflict:
+                raise ParseError("The whole room is booked for those dates.")
+            bed_conflict = Booking.objects.filter(
+                bed=bed,
+                kind=Booking.BookingKindChoices.BED,
+                check_in__lt=check_out,
+                check_out__gt=check_in,
+            ).exists()
+            if bed_conflict:
+                raise ParseError("This bed is already booked for those dates.")
+            booking = serializer.save(
+                bed=bed,
+                room=bed.room,
+                user=request.user,
+                kind=Booking.BookingKindChoices.BED,
             )
             return Response(
                 PublicBookingSerializer(booking).data,

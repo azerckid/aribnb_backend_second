@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Amenity, Room
+from .models import Amenity, Room, Bed
 from users.serializers import TinyUserSerializer
 from reviews.serializers import ReviewSerializer
 from categories.serializers import CategorySerializer
@@ -13,6 +13,18 @@ class AmenitySerializer(serializers.ModelSerializer):
             "name",
             "description",
         )
+
+class BedSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Bed
+        fields = (
+            "pk",
+            "name",
+            "bed_type",
+            "capacity",
+        )
+
 
 class RoomDetailSerializer(serializers.ModelSerializer):
 
@@ -28,6 +40,7 @@ class RoomDetailSerializer(serializers.ModelSerializer):
     is_owner = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     photos = PhotoSerializer(many=True, read_only=True)
+    beds = BedSerializer(many=True, read_only=True)
 
     class Meta:
         model = Room

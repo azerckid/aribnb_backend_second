@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Amenity, Room
+from .models import Amenity, Room, Bed
 
 
 @admin.action(description="Set all prices to zero")
@@ -46,3 +46,10 @@ class AmenityAdmin(admin.ModelAdmin):
     list_display = ("name", "description", "created_at", "updated_at")
     readonly_fields = ("created_at", "updated_at")
     search_fields = ("name",)
+
+
+@admin.register(Bed)
+class BedAdmin(admin.ModelAdmin):
+    list_display = ("name", "room", "bed_type", "capacity", "created_at")
+    list_filter = ("bed_type", "room__name")
+    search_fields = ("name", "room__name")
