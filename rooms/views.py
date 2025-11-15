@@ -248,7 +248,6 @@ class RoomPhotos(APIView):
         else:
             return Response(serializer.errors)
 
-
 class RoomBookings(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -325,7 +324,6 @@ class RoomBookings(APIView):
             )
         return Response(serializer.errors)
 
-
 class RoomBeds(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -360,7 +358,6 @@ class RoomBeds(APIView):
                 status=201,
             )
         return Response(serializer.errors)
-
 
 class BedDetail(APIView):
 
@@ -397,7 +394,6 @@ class BedDetail(APIView):
             raise PermissionDenied
         bed.delete()
         return Response(status=HTTP_204_NO_CONTENT)
-
 
 class BedBookings(APIView):
 

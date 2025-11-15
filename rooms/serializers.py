@@ -25,7 +25,6 @@ class BedSerializer(serializers.ModelSerializer):
             "capacity",
         )
 
-
 class RoomDetailSerializer(serializers.ModelSerializer):
 
     owner = TinyUserSerializer(read_only=True)
