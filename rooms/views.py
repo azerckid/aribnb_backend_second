@@ -293,7 +293,10 @@ class RoomBookings(APIView):
 
     def post(self, request, pk):
         room = self.get_object(pk)
-        serializer = CreateRoomBookingSerializer(data=request.data)
+        serializer = CreateRoomBookingSerializer(
+            data=request.data,
+            context={"room": room},
+        )
         if serializer.is_valid():
             check_in = serializer.validated_data["check_in"]
             check_out = serializer.validated_data["check_out"]
@@ -440,29 +443,19 @@ class BedBookings(APIView):
 
     def post(self, request, pk, bed_pk):
         bed = self.get_bed(pk, bed_pk)
-        serializer = CreateRoomBookingSerializer(data=request.data)
+        serializer = CreateRoomBookingSerializer(
+            data=request.data,
+            context={
+                "room": bed.room,
+                "bed": bed,
+            },
+        )
         if serializer.is_valid():
             check_in = serializer.validated_data["check_in"]
             check_out = serializer.validated_data["check_out"]
             guests = serializer.validated_data["guests"]
             if guests > bed.capacity:
                 raise ParseError("Guest count exceeds bed capacity.")
-            room_conflict = Booking.objects.filter(
-                room=bed.room,
-                kind=Booking.BookingKindChoices.ROOM,
-                check_in__lt=check_out,
-                check_out__gt=check_in,
-            ).exists()
-            if room_conflict:
-                raise ParseError("The whole room is booked for those dates.")
-            bed_conflict = Booking.objects.filter(
-                bed=bed,
-                kind=Booking.BookingKindChoices.BED,
-                check_in__lt=check_out,
-                check_out__gt=check_in,
-            ).exists()
-            if bed_conflict:
-                raise ParseError("This bed is already booked for those dates.")
             booking = serializer.save(
                 bed=bed,
                 room=bed.room,
