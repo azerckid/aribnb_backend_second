@@ -125,3 +125,23 @@ class LogOut(APIView):
     def post(self, request):
         logout(request)
         return Response({"ok": True})
+
+
+class JWTLogIn(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        if not username or not password:
+            raise ParseError("username and password are required.")
+        user = authenticate(
+            request,
+            username=username,
+            password=password,
+        )
+        if user is None:
+            return Response(
+                {"error": "Invalid credentials."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        token = jwt.encode({"pk": user.pk}, settings.SECRET_KEY, algorithm="HS256")
+        return Response({"token": token})
