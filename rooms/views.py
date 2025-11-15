@@ -1,20 +1,23 @@
 from django.conf import settings
+from django.utils import timezone
+from django.db import transaction
+import calendar
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.status import HTTP_204_NO_CONTENT
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import (
     NotFound,
-    NotAuthenticated,
     ParseError,
     PermissionDenied,
 )
-from rest_framework.status import HTTP_204_NO_CONTENT
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from django.db import transaction
 from .models import Amenity, Room
 from categories.models import Category
+from bookings.models import Booking
 from .serializers import AmenitySerializer, RoomListSerializer, RoomDetailSerializer
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
+from bookings.serializers import PublicBookingSerializer
 
 class Amenities(APIView):
     def get(self, request):
@@ -236,3 +239,47 @@ class RoomPhotos(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+
+class RoomBookings(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+
+    def get(self, request, pk):
+        room = self.get_object(pk)
+        try:
+            year = int(request.query_params.get("year", timezone.localdate().year))
+            month = int(request.query_params.get("month", timezone.localdate().month))
+        except ValueError:
+            raise ParseError("year and month must be integers")
+        if month < 1 or month > 12:
+            raise ParseError("month must be between 1 and 12")
+        _, last_day = calendar.monthrange(year, month)
+        start_date = timezone.datetime(year, month, 1).date()
+        end_date = timezone.datetime(year, month, last_day).date()
+        bookings = Booking.objects.filter(
+            room=room,
+            kind=Booking.BookingKindChoices.ROOM,
+            check_in__gte=start_date,
+            check_in__lte=end_date,
+        ).order_by("check_in")
+        try:
+            page = int(request.query_params.get("page", 1))
+            if page < 1:
+                raise ValueError
+        except ValueError:
+            raise ParseError("page must be a positive integer")
+        page_size = settings.PAGE_SIZE
+        start = (page - 1) * page_size
+        end = start + page_size
+        serializer = PublicBookingSerializer(
+            bookings[start:end],
+            many=True,
+        )
+        return Response(serializer.data)
