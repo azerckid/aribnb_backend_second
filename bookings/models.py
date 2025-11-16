@@ -9,6 +9,7 @@ class Booking(CommonModel):
     class BookingKindChoices(models.TextChoices):
         ROOM = ("room", "Room")
         EXPERIENCE = ("experience", "Experience")
+        BED = ("bed", "Bed")
 
     kind = models.CharField(max_length=15, choices=BookingKindChoices.choices)
     user = models.ForeignKey(

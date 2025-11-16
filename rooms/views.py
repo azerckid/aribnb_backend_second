@@ -225,6 +225,8 @@ class RoomReviews(APIView):
             )
             serializer = ReviewSerializer(review)
             return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
 
 class RoomPhotos(APIView):
 
