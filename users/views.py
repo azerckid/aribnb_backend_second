@@ -6,8 +6,10 @@ from django.db.models import Prefetch
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ParseError, NotFound
+from rest_framework.authentication import TokenAuthentication
+from config.authentication import JWTAuthentication
 
 from users.models import User
 from reviews.models import Review
@@ -48,6 +50,9 @@ class Me(APIView):
 
 class Users(APIView):
 
+    permission_classes = [AllowAny]
+    authentication_classes = []  # CSRF 검증 우회
+
     def post(self, request):
         password = request.data.get("password")
         if not password:
@@ -64,6 +69,8 @@ class Users(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PublicUser(APIView):
+
+    permission_classes = [AllowAny]
 
     def get(self, request, username):
         user = (
@@ -100,6 +107,9 @@ class ChangePassword(APIView):
 
 class LogIn(APIView):
 
+    permission_classes = [AllowAny]
+    authentication_classes = []  # CSRF 검증 우회
+
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
@@ -121,6 +131,7 @@ class LogIn(APIView):
 class LogOut(APIView):
 
     permission_classes = [IsAuthenticated]
+    authentication_classes = []  # CSRF 검증 우회 (세션은 여전히 작동)
 
     def post(self, request):
         logout(request)
@@ -128,6 +139,10 @@ class LogOut(APIView):
 
 
 class JWTLogIn(APIView):
+
+    permission_classes = [AllowAny]
+    authentication_classes = []  # CSRF 검증 우회
+
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
