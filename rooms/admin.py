@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from medias.models import Photo
 from .models import Amenity, Room, Bed
 
 
@@ -10,9 +11,16 @@ def reset_prices(model_admin, request, rooms):
         room.save()
 
 
+class PhotoInline(admin.TabularInline):
+    model = Photo
+    fields = ("file", "description")
+    extra = 1
+
+
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     actions = (reset_prices,)
+    inlines = (PhotoInline,)
     list_display = (
         "name",
         "price",
