@@ -1,7 +1,7 @@
 import jwt
 
 from django.conf import settings
-from rest_framework.authentication import BaseAuthentication
+from rest_framework.authentication import BaseAuthentication, SessionAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
 from users.models import User
@@ -30,4 +30,12 @@ class JWTAuthentication(BaseAuthentication):
             return (user, None)
         except User.DoesNotExist:
             raise AuthenticationFailed("User not found")
+
+
+class NoCSRFSessionAuthentication(SessionAuthentication):
+    """SessionAuthentication without CSRF validation for API endpoints."""
+    
+    def enforce_csrf(self, request):
+        # CSRF 검증을 우회
+        return
 

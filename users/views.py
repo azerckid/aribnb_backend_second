@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ParseError, NotFound
 from rest_framework.authentication import TokenAuthentication
-from config.authentication import JWTAuthentication
+from config.authentication import JWTAuthentication, NoCSRFSessionAuthentication
 
 from users.models import User
 from reviews.models import Review
@@ -131,7 +131,7 @@ class LogIn(APIView):
 class LogOut(APIView):
 
     permission_classes = [IsAuthenticated]
-    authentication_classes = []  # CSRF 검증 우회 (세션은 여전히 작동)
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]  # CSRF 우회하면서 세션 인증 지원
 
     def post(self, request):
         logout(request)
