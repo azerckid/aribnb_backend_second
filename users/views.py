@@ -163,7 +163,6 @@ class JWTLogIn(APIView):
         token = jwt.encode({"pk": user.pk}, settings.SECRET_KEY, algorithm="HS256")
         return Response({"token": token})
 
-
 class GitHubLogIn(APIView):
 
     permission_classes = [AllowAny]
@@ -241,7 +240,6 @@ class GitHubLogIn(APIView):
         # 세션 로그인
         login(request, user)
         return Response({"ok": True})
-
 
 class KakaoLogIn(APIView):
 
