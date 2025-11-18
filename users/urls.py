@@ -11,6 +11,8 @@ urlpatterns = [
     path("log-out", views.LogOut.as_view()),
     path("token-login", obtain_auth_token),
     path("jwt-login", views.JWTLogIn.as_view()),
+    path("github/callback", views.GitHubLogIn.as_view()),
+    path("kakao/callback", views.KakaoLogIn.as_view()),
     path("@<str:username>", views.PublicUser.as_view()),
 ]
 

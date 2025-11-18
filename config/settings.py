@@ -188,3 +188,11 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+# OAuth Settings
+GITHUB_CLIENT_ID = env("GITHUB_CLIENT_ID", default="")
+GITHUB_CLIENT_SECRET = env("GITHUB_CLIENT_SECRET", default="")
+
+KAKAO_CLIENT_ID = env("KAKAO_CLIENT_ID", default="")
+KAKAO_CLIENT_SECRET = env("KAKAO_CLIENT_SECRET", default="")
+KAKAO_REDIRECT_URI = env("KAKAO_REDIRECT_URI", default="http://localhost:5173/auth/kakao/callback")
