@@ -7,11 +7,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import (
     NotFound,
     ParseError,
     PermissionDenied,
 )
+from config.authentication import NoCSRFSessionAuthentication, JWTAuthentication
 from .models import Amenity, Room, Bed
 from categories.models import Category
 from bookings.models import Booking
@@ -79,6 +81,7 @@ class AmenityDetail(APIView):
 class Rooms(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get(self, request):
         all_rooms = Room.objects.all()
