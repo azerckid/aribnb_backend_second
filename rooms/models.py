@@ -18,6 +18,7 @@ class Room(CommonModel):
     price = models.PositiveIntegerField()
     rooms = models.PositiveIntegerField()
     toilets = models.PositiveIntegerField()
+    beds = models.PositiveIntegerField(default=0)
     description = models.TextField()
     address = models.CharField(max_length=250)
     pet_friendly = models.BooleanField(default=True)
@@ -81,7 +82,7 @@ class Bed(CommonModel):
     room = models.ForeignKey(
         "rooms.Room",
         on_delete=models.CASCADE,
-        related_name="beds",
+        related_name="bed_list",
     )
     name = models.CharField(max_length=100)
     bed_type = models.CharField(max_length=20, choices=BedTypeChoices.choices)

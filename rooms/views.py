@@ -4,6 +4,7 @@ from django.db import transaction
 import calendar
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import (
@@ -117,7 +118,7 @@ class Rooms(APIView):
                         room,
                         context={"request": request},
                     )
-                    return Response(serializer.data)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
             except Exception:
                 raise ParseError("Amenity not found")
         else:
@@ -341,7 +342,7 @@ class RoomBeds(APIView):
 
     def get(self, request, pk):
         room = self.get_room(pk)
-        beds = room.beds.all()
+        beds = room.bed_list.all()
         bed_type = request.query_params.get("type")
         if bed_type:
             beds = beds.filter(bed_type=bed_type)

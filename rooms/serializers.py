@@ -27,6 +27,8 @@ class BedSerializer(serializers.ModelSerializer):
 
 class RoomDetailSerializer(serializers.ModelSerializer):
 
+    pk = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
     owner = TinyUserSerializer(read_only=True)
     amenities = AmenitySerializer(
         read_only=True,
@@ -39,11 +41,47 @@ class RoomDetailSerializer(serializers.ModelSerializer):
     is_owner = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     photos = PhotoSerializer(many=True, read_only=True)
-    beds = BedSerializer(many=True, read_only=True)
+    bed_list = BedSerializer(many=True, read_only=True)
 
     class Meta:
         model = Room
-        fields = "__all__"
+        fields = [
+            "id",
+            "pk",
+            "name",
+            "country",
+            "city",
+            "address",
+            "price",
+            "rooms",
+            "toilets",
+            "beds",
+            "description",
+            "pet_friendly",
+            "kind",
+            "category",
+            "amenities",
+            "rating",
+            "is_owner",
+            "is_liked",
+            "photos",
+            "bed_list",
+            "owner",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "pk",
+            "rating",
+            "is_owner",
+            "is_liked",
+            "photos",
+            "bed_list",
+            "owner",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_rating(self, room):
         return room.rating()
