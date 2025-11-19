@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 from common.models import CommonModel
 
@@ -6,7 +7,7 @@ from common.models import CommonModel
 class Photo(CommonModel):
     """Photo files for rooms or experiences."""
 
-    file = models.URLField()
+    file = CloudinaryField('image')
     description = models.CharField(max_length=140)
     room = models.ForeignKey(
         "rooms.Room",

@@ -49,6 +49,8 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
+    "cloudinary_storage",
+    "cloudinary",
 ]
 
 CUSTOM_APPS = [
@@ -196,3 +198,14 @@ GITHUB_CLIENT_SECRET = env("GITHUB_CLIENT_SECRET", default="")
 KAKAO_CLIENT_ID = env("KAKAO_CLIENT_ID", default="")
 KAKAO_CLIENT_SECRET = env("KAKAO_CLIENT_SECRET", default="")
 KAKAO_REDIRECT_URI = env("KAKAO_REDIRECT_URI", default="http://localhost:5173/auth/kakao/callback")
+
+
+# Cloudinary Settings
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env("CLOUDINARY_CLOUD_NAME", default=""),
+    'API_KEY': env("CLOUDINARY_API_KEY", default=""),
+    'API_SECRET': env("CLOUDINARY_API_SECRET", default=""),
+}
+
+# 미디어 파일 저장소 설정
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
