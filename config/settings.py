@@ -240,7 +240,7 @@ GITHUB_CLIENT_SECRET = env("GITHUB_CLIENT_SECRET", default="")
 
 KAKAO_CLIENT_ID = env("KAKAO_CLIENT_ID", default="")
 KAKAO_CLIENT_SECRET = env("KAKAO_CLIENT_SECRET", default="")
-KAKAO_REDIRECT_URI = env("KAKAO_REDIRECT_URI", default="http://localhost:5173/auth/kakao/callback")
+KAKAO_REDIRECT_URI = env("KAKAO_REDIRECT_URI", default="https://aribnb-frontend-second.vercel.app/auth/kakao/callback")
 
 
 # Cloudinary Settings
