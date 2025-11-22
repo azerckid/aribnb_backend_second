@@ -125,7 +125,12 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 
 1. **"Create Web Service"** 클릭
 2. 배포 진행 상황 모니터링 (Build Log 확인)
-3. 배포 완료 후 URL로 접속 테스트
+3. **서비스 URL 확인 방법:**
+   - 방법 1: 서비스 목록에서 **"airbnb-backend"** 클릭 → 상세 페이지 상단에 URL 표시
+   - 방법 2: 서비스 상세 페이지 → **"Settings"** 탭 → Service 정보 섹션에서 URL 확인
+   - 방법 3: 서비스 상세 페이지 상단에 **"Visit site"** 버튼 옆에 URL 표시
+   - 기본 형식: `https://airbnb-backend.onrender.com`
+4. 배포 완료 후 URL로 접속 테스트
 
 ### 6. 마이그레이션 (자동 실행됨)
 
