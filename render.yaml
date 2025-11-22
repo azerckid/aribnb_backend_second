@@ -53,7 +53,7 @@ services:
         sync: false
 
   # PostgreSQL Database
-  - type: pspg
+  - type: pg
     name: airbnb-db
     region: singapore
     plan: free
