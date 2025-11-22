@@ -219,6 +219,21 @@ CSRF_TRUSTED_ORIGINS = env.list(
     ]
 )
 
+# 쿠키 도메인 설정 (중요!)
+# None으로 설정하면 쿠키가 백엔드 서버 도메인에 설정됨
+# SameSite=None + Secure=True로 크로스 오리진(프론트엔드)에서 쿠키 전송 가능
+SESSION_COOKIE_DOMAIN = None
+CSRF_COOKIE_DOMAIN = None
+
+# 프로덕션에서는 HTTPS를 사용하므로 Secure=True 필요
+SESSION_COOKIE_SECURE = not DEBUG  # 프로덕션에서만 True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 크로스 오리진에서는 'None' 필요
+
+CSRF_COOKIE_SECURE = not DEBUG  # 프로덕션에서만 True
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 크로스 오리진에서는 'None' 필요
+
 # OAuth Settings
 GITHUB_CLIENT_ID = env("GITHUB_CLIENT_ID", default="")
 GITHUB_CLIENT_SECRET = env("GITHUB_CLIENT_SECRET", default="")
