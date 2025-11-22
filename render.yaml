@@ -52,11 +52,10 @@ services:
       - key: KAKAO_REDIRECT_URI
         sync: false
 
-  # PostgreSQL Database
-  - type: pg
-    name: airbnb-db
-    region: singapore
-    plan: free
+# PostgreSQL Database (별도 databases 섹션 사용)
+databases:
+  - name: airbnb-db
     databaseName: airbnb
-    postgresMajorVersion: 16
+    plan: free
+    region: singapore
 
