@@ -39,17 +39,10 @@ class CreateRoomBookingSerializer(serializers.ModelSerializer):
             )
         room = self.context.get("room")
         bed = self.context.get("bed")
-        if room:
-            overlaps = Booking.objects.filter(
-                room=room,
-                kind=Booking.BookingKindChoices.ROOM,
-                check_in__lt=check_out,
-                check_out__gt=check_in,
-            ).exists()
-            if overlaps:
-                raise serializers.ValidationError(
-                    "Those dates are already taken for this room."
-                )
+        if room and not bed:
+            # For room bookings (not bed-specific), check capacity instead of blocking
+            # This will be handled in the view for better control
+            pass
             if bed:
                 room_full = Booking.objects.filter(
                     room=room,

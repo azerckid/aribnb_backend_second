@@ -47,6 +47,14 @@ class Room(CommonModel):
     def total_amenities(self) -> int:
         return self.amenities.count()
 
+    def total_beds(self) -> int:
+        """Return the number of beds in this room."""
+        bed_count = self.bed_list.count()
+        return bed_count if bed_count > 0 else self.beds
+    
+    total_beds.short_description = "Beds"
+    total_beds.admin_order_field = "beds"  # Enable sorting by beds field
+
     def rating(self):
         count = self.reviews.count()
         if count == 0:
