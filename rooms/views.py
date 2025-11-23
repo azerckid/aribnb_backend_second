@@ -131,6 +131,7 @@ class Rooms(APIView):
 class RoomDetail(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
     
     def get_object(self, pk):
         try:
@@ -198,6 +199,7 @@ class RoomDetail(APIView):
 class RoomReviews(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get_object(self, pk):
         try:
@@ -236,6 +238,7 @@ class RoomReviews(APIView):
 class RoomPhotos(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get_object(self, pk):
         try:
@@ -258,6 +261,7 @@ class RoomPhotos(APIView):
 class RoomBookings(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get_object(self, pk):
         try:
@@ -376,6 +380,7 @@ class RoomBookings(APIView):
 class RoomBeds(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get_room(self, pk):
         try:
@@ -411,6 +416,7 @@ class RoomBeds(APIView):
 class BedDetail(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get_object(self, room_pk, bed_pk):
         try:
@@ -447,6 +453,7 @@ class BedDetail(APIView):
 class BedBookings(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get_bed(self, room_pk, bed_pk):
         try:
