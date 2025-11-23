@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.status import HTTP_204_NO_CONTENT
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import (
     NotFound,
@@ -25,6 +25,7 @@ from .serializers import (
     BedSerializer,
 )
 from reviews.serializers import ReviewSerializer
+from reviews.models import Review
 from medias.serializers import PhotoSerializer
 from bookings.serializers import (
     PublicBookingSerializer,
@@ -234,6 +235,40 @@ class RoomReviews(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+class ReviewReply(APIView):
+
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
+
+    def get_room(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+
+    def get_review(self, review_pk, room):
+        try:
+            review = Review.objects.get(pk=review_pk, room=room)
+            return review
+        except Review.DoesNotExist:
+            raise NotFound
+
+    def post(self, request, pk, review_pk):
+        room = self.get_room(pk)
+        review = self.get_review(review_pk, room)
+        
+        reply_text = request.data.get("reply")
+        if not reply_text:
+            raise ParseError("reply is required.")
+        
+        review.reply = reply_text
+        review.reply_user = request.user
+        review.reply_created_at = timezone.now()
+        review.save()
+        
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data)
 
 class RoomPhotos(APIView):
 
