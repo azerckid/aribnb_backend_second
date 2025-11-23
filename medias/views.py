@@ -1,15 +1,18 @@
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_200_OK
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.authentication import TokenAuthentication
+from config.authentication import NoCSRFSessionAuthentication, JWTAuthentication
 
 from .models import Photo
 
 
 class PhotoDetail(APIView):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [NoCSRFSessionAuthentication, TokenAuthentication, JWTAuthentication]
 
     def get_object(self, pk):
         try:
